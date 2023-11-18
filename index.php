@@ -1,11 +1,18 @@
 <?php
-    include 'data/db.php';
-    include 'template/engine.php';
+include 'data/db.php';
+include 'data/session.php';
+include 'template/engine.php';
 
-    $content = <<<EOD
+$session = new session;
+
+if ($session->is_logged_in()) {
+    Header('Location: panel.php');
+}
+
+$content = <<<EOD
 
 
-    <p>writar is a free text sharing and hosting service.</p>
+    <p>writar is a free text hosting and sharing service.</p>
     
     <ul>
        <li>markdown support</li>
@@ -18,8 +25,7 @@
     
     <p>to publish and manage your documents, please identify.</p>
     
-
-    <form>
+    <form hx-post="./action/identify.php" hx-target="#login_result">
         <input class="field_input" placeholder="username" name="writar_username"> <br>
         <input class="field_input" placeholder="password" type="password" name="writar_password"> <br>
         <input class="button" name="login" type="submit" value="login"> <input class="button" name="register" type="submit" value="make an account">
@@ -27,5 +33,6 @@
     <p><small id="login_result">awaiting action.</small></p>
 
 
-    EOD;
-    render_template('layout', "home", $content);
+EOD;
+
+render_template('layout', "home", $content);

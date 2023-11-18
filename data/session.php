@@ -6,10 +6,14 @@ class session {
     private int $id;
     private bool $isLoggedIn = false;
 
-    function __construct() {
-        include_once "db.php";
-
-        $this->mysqli = db_connect();
+    function __construct($mysqli = null) {
+        if ($mysqli == null) {
+            include_once "db.php";
+            $this->mysqli = db_connect();
+        }
+        else {
+            $this->mysqli = $mysqli;
+        }
 
         // both these cookies indicate a session is locally set.
         if (isset($_COOKIE['user_id']) && isset($_COOKIE['session_token'])) {
@@ -31,21 +35,19 @@ class session {
         }
     }
 
-    function authorize($username, $password): string
+    function identify($username, $password): string
     {
         if (!ctype_alnum($username)) {
-            return "invalid username.";
+            return "username may only contain alphanumerics.";
         }
 
         if (strlen($password) > 72) {
-            return "password can't be longer than 72 characters.";
+            return "invalid password";
         }
 
-        $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
-
         // check the key exists in the database.
-        $query = $this->mysqli->prepare("SELECT * FROM users WHERE username = ? AND password = ?");
-        $query->bind_param("ss", $username, $hashed_pword);
+        $query = $this->mysqli->prepare("SELECT * FROM users WHERE username = ?");
+        $query->bind_param("s", $username);
         $query->execute();
 
         $result = $query->get_result();
@@ -55,6 +57,10 @@ class session {
         }
 
         $result = $result->fetch_array();
+
+        if (!password_verify($password, $result['password'])) {
+            return "username or password is incorrect.";
+        }
 
         $user_id = $result['id'];
 
@@ -87,8 +93,12 @@ class session {
             return "username may only contain alphanumerics.";
         }
 
+        if (strlen($password) < 8) {
+            return "password should be at least 8 characters long.";
+        }
+
         if (strlen($password) > 72) {
-            return "password can't be longer than 72 characters.";
+            return "password can't be longer than 72 characters. no, smartass, this doesn't mean they're being stored in plaintext.";
         }
 
         $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
@@ -100,7 +110,7 @@ class session {
 
         $result = $query->get_result();
 
-        if ($result->num_rows < 1) {
+        if ($result->num_rows > 0) {
             return "username is taken.";
         }
 
