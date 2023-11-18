@@ -10,6 +10,7 @@ $session = new session($database);
 
 if (!$session->is_logged_in()) {
     Header('Location: index.php');
+    exit;
 }
 
 $document_list = get_documents($database, $session->get_id());
@@ -17,10 +18,10 @@ $document_list = get_documents($database, $session->get_id());
 $content = <<<EOD
 
 
-    <h3>identified as {$session->get_username()}.</h3>
+    <h3>identified as {$session->get_username()}</h3>
     
     <ul>
-       <li>make new document</li>
+       <li><a href="new.php">make new document</a></li>
        <li><a href="logout.php">logout</a></li>
     </ul>
     

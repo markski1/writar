@@ -1,6 +1,7 @@
 <?php
 
-function get_documents($database, $user_id) {
+function get_documents($database, $user_id): string
+{
     $query = $database->prepare("SELECT * FROM user_text WHERE user_id = ?");
     $query->bind_param("i", $user_id);
     $query->execute();
@@ -18,4 +19,18 @@ function get_documents($database, $user_id) {
     }
 
     return $docs;
+}
+
+function create_document($title, $content): string
+{
+    return "<p>not yet implemented.</p>";
+}
+
+function render_document($title, $content): string
+{
+    $render = "<h2>{$title}</h2>";
+
+    $render .= "<div>{$content}</div>";
+
+    return $render;
 }

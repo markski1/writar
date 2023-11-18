@@ -7,6 +7,7 @@ $session = new session;
 
 if ($session->is_logged_in()) {
     Header('Location: panel.php');
+    exit;
 }
 
 $content = <<<EOD
