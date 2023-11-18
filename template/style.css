@@ -11,7 +11,7 @@ body {
 /* Body */
 
 header {
-    width: 80rem;
+    width: 65rem;
     max-width: 95%;
     margin: auto;
     top: 0;
@@ -26,7 +26,17 @@ main {
 footer {
     text-align: center;
     margin-top: 10rem;
+    margin-bottom: 1rem;
     width: 100%;
+}
+
+a {
+    color: black;
+}
+
+code, pre {
+    background: #DDDDDD;
+    padding: 0.5rem;
 }
 
 /* Classes */

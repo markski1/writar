@@ -1,15 +1,24 @@
 <?php
 
 include_once '../data/session.php';
+include_once '../data/db.php';
 include '../data/documents.php';
 
-$session = new session;
+$database = db_connect();
+
+$session = new session($database);
+
+if (!$session->is_logged_in()) {
+    return "auth error.";
+}
 
 $title = $_POST['writar_title'] ?? '??INVALID??';
 $content = $_POST['writar_document'] ?? '??INVALID??';
+$password = $_POST['writar_password'] ?? '';
+
 
 if (isset($_POST['create'])) {
-    echo create_document($title, $content);
+    echo create_document($database, $title, $content, $password, $session->get_id());
     exit;
 }
 

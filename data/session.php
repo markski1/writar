@@ -114,10 +114,13 @@ class session {
             return "username is taken.";
         }
 
-        // check the user does not already exist.
         $query = $this->mysqli->prepare("INSERT INTO users (username, password) VALUES(?, ?)");
         $query->bind_param("ss", $username, $hashed_pword);
-        $query->execute();
+        $success = $query->execute();
+
+        if (!$success) {
+            return "sorry, could not create account.";
+        }
 
         return 'account registered. you may now click "login".';
     }

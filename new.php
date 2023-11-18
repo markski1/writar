@@ -36,4 +36,4 @@ $content = <<<EOD
 
 EOD;
 
-render_template('layout', "panel", $content);
+render_template('layout', "writing document", $content);
