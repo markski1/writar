@@ -10,4 +10,4 @@ $session = new session($database);
 
 $document = get_document($database, $_GET['id']);
 
-render_template('layout', "viewing document", $document);
+render_template("viewing document", $document);

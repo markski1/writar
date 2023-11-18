@@ -98,7 +98,7 @@ class session {
         }
 
         if (strlen($password) > 72) {
-            return "password can't be longer than 72 characters. no, smartass, this doesn't mean they're being stored in plaintext.";
+            return "password can't be longer than 72 characters. no, this doesn't mean it's being stored in plaintext.";
         }
 
         $hashed_pword = password_hash($password, PASSWORD_BCRYPT);

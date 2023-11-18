@@ -39,7 +39,7 @@ function get_document($database, $document_id): string
 
     $result = $result->fetch_array();
 
-    return render_document($result['title'], $result['content'], $result['username'], $result['created_at']);
+    return render_document($database, $result['title'], $result['content'], $result['username'], $result['created_at'], $document_id);
 }
 
 function create_document($database, $title, $content, $password, $user_id): string
@@ -81,6 +81,9 @@ function create_document($database, $title, $content, $password, $user_id): stri
     }
 
     if (strlen($password) > 0) {
+        if (strlen($password) > 72) {
+            return "password can't be longer than 72 characters. no, this doesn't mean it's being stored in plaintext.";
+        }
         $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
     }
     else {
@@ -98,7 +101,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
     return "<p>document created. <a href='view.php?id=$url_id'>go to document</a></p>";
 }
 
-function render_document($title, $content, $username, $datetime): string
+function render_document($database, $title, $content, $username, $datetime, $url_id = false): string
 {
     if (strlen($title) == 0) $title = "untitled";
     if (strlen($content) == 0) $content = "document is empty.";
@@ -112,9 +115,22 @@ function render_document($title, $content, $username, $datetime): string
 
     $render = "<h2>{$title}</h2>";
 
-    $render .= "<p><small>written by {$username} <span style='color: #777777'>at {$datetime}</span></small></p> <hr>";
+    $owner = false;
 
-    $render .= "<div class='document_content'>{$content}</div>";
+    if ($url_id) {
+        $session = new session($database);
+
+        if ($session->get_username() == $username) {
+            $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$datetime}</span> | <a href='edit.php?id={$url_id}'>edit</a> | <a href='delete.php?id={$url_id}'>delete</a></small></p>";
+            $owner = true;
+        }
+    }
+
+    if (!$owner) {
+        $render .= "<p><small>written by <b>{$username}</b> <span style='color: #777777'>at {$datetime}</span></small></p>";
+    }
+
+    $render .= "<hr><div class='document_content'>{$content}</div>";
 
     return $render;
 }

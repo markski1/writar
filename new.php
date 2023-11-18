@@ -42,4 +42,4 @@ $content = <<<EOD
 
 EOD;
 
-render_template('layout', "writing document", $content);
+render_template("writing document", $content);

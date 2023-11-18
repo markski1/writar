@@ -5,7 +5,8 @@ body {
     color: black;
     font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
     Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.1rem;
+    line-height: 1.4;
     margin: 0;
 }
 
@@ -37,7 +38,7 @@ a {
 
 hr {
     border: 1px solid black;
-    margin: 2rem auto;
+    margin: 1.25rem auto;
 }
 
 code, pre {
