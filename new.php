@@ -20,12 +20,18 @@ $content = <<<EOD
     <form hx-post="./action/create-document.php" hx-target="#creation_result">
         <label>
             <p>title</p>
-            <input class="field_input" placeholder="new document" name="writar_title">
+            <input class="field_input" placeholder="new document" name="writar_title" style="width: 20rem">
+        </label>
+        <label>
+            <p>password</p>
+            <input class="field_input" placeholder="leave empty if no password desired" name="writar_password" style="width: 20rem">
         </label>
         <label>
             <p>document</p>
             <textarea class="text_input" name="writar_document" placeholder="once upon a time..."></textarea>
         </label>
+        <br>
+        
         <input class="button" name="create" type="submit" value="create document"> <input class="button" name="preview" type="submit" value="preview formatted document">
     </form>
     

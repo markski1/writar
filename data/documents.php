@@ -18,7 +18,7 @@ function get_documents($database, $user_id): string
 
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
-    foreach ($posts as &$post) {
+    foreach ($posts as $post) {
         $docs .= "<li><a href='view.php?id={$post['url_id']}'>{$post['title']}</a></li>";
     }
 
@@ -28,7 +28,7 @@ function get_documents($database, $user_id): string
 function get_document($database, $document_id): string
 {
     $query = $database->prepare("SELECT t.*, u.username FROM user_text as t INNER JOIN users as u ON t.user_id = u.id WHERE url_id = ?");
-    $query->bind_param("i", $document_id);
+    $query->bind_param("s", $document_id);
     $query->execute();
 
     $result = $query->get_result();
@@ -65,9 +65,30 @@ function create_document($database, $title, $content, $password, $user_id): stri
         }
     }
 
+    if (strlen($title) == 0) {
+        return "<p>please enter a title.</p>";
+    }
+
+    $content_length = strlen($content);
+
+    if ($content_length < 10) {
+        return "<p>a document should be at least 10 characters long.</p>";
+    }
+
+    if ($content_length > 50000) {
+        $formatted_content_length = number_format($content_length);
+        return "<p>a document may not be longer than 50,000 characters. currently is {$formatted_content_length}.</p>";
+    }
+
+    if (strlen($password) > 0) {
+        $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
+    }
+    else {
+        $hashed_pword = '';
+    }
 
     $query = $database->prepare("INSERT INTO user_text (title, content, user_id, url_id, password) VALUES(?, ?, ?, ?, ?)");
-    $query->bind_param("ssiss", $title, $content, $user_id, $url_id, $password);
+    $query->bind_param("ssiss", $title, $content, $user_id, $url_id, $hashed_pword);
     $success = $query->execute();
 
     if (!$success) {
@@ -93,7 +114,7 @@ function render_document($title, $content, $username, $datetime): string
 
     $render .= "<p><small>written by {$username} <span style='color: #777777'>at {$datetime}</span></small></p> <hr>";
 
-    $render .= "<div>{$content}</div>";
+    $render .= "<div class='document_content'>{$content}</div>";
 
     return $render;
 }
