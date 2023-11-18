@@ -27,7 +27,7 @@ function get_documents($database, $user_id): string
 
 function get_document($database, $document_id): string
 {
-    $query = $database->prepare("SELECT * FROM user_text WHERE url_id = ?");
+    $query = $database->prepare("SELECT t.*, u.username FROM user_text as t INNER JOIN users as u ON t.user_id = u.id WHERE url_id = ?");
     $query->bind_param("i", $document_id);
     $query->execute();
 
@@ -39,7 +39,7 @@ function get_document($database, $document_id): string
 
     $result = $result->fetch_array();
 
-    return render_document($result['title'], $result['content']);
+    return render_document($result['title'], $result['content'], $result['username'], $result['created_at']);
 }
 
 function create_document($database, $title, $content, $password, $user_id): string
@@ -77,7 +77,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
     return "<p>document created. <a href='view.php?id=$url_id'>go to document</a></p>";
 }
 
-function render_document($title, $content): string
+function render_document($title, $content, $username, $datetime): string
 {
     if (strlen($title) == 0) $title = "untitled";
     if (strlen($content) == 0) $content = "document is empty.";
@@ -90,6 +90,8 @@ function render_document($title, $content): string
     $content = $Parsedown->text($content);
 
     $render = "<h2>{$title}</h2>";
+
+    $render .= "<p><small>written by {$username} <span style='color: #777777'>at {$datetime}</span></small></p> <hr>";
 
     $render .= "<div>{$content}</div>";
 

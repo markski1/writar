@@ -34,6 +34,11 @@ a {
     color: black;
 }
 
+hr {
+    border: 1px solid black;
+    margin: 2rem auto;
+}
+
 code, pre {
     background: #DDDDDD;
     padding: 0.5rem;

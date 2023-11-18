@@ -23,7 +23,7 @@ if (isset($_POST['create'])) {
 }
 
 if (isset($_POST['preview'])) {
-    echo render_document($title, $content);
+    echo render_document($title, $content, $session->get_username(), '0000-00-00 00:00:00');
     exit;
 }
 
