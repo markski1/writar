@@ -14,10 +14,8 @@ if (!$session->is_logged_in()) {
 
 $content = <<<EOD
 
-
-    <h3>identified as {$session->get_username()}</h3>
-    
-    <h4>settings</h4>
+  
+    <h3>settings</h3>
     
     <ul>
        <li><a href="#">change username</a></li>
@@ -25,7 +23,7 @@ $content = <<<EOD
        <li><a href="#">delete account</a></li>
     </ul>
     
-    <a href="panel.php">return</a>
+    <sitelink to="panel.php">return</sitelink>
 
 
 EOD;

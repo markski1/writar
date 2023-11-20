@@ -11,7 +11,7 @@ $session = new session($database);
 $document = get_document($database, $session, $_GET['id']);
 
 if (!$document) {
-    render_template("deleting document", "<p>document does not exist.</p>");
+    render_template("not found", "<p>document does not exist.</p>");
     exit;
 }
 
@@ -27,7 +27,7 @@ if ($document->needs_password()) {
 
             <h3>a password is required to view this document</h3>
             
-            <form method="POST">
+            <form hx-post hx-target="main">
                 <input class="field_input" placeholder="enter document password" type="password" autocomplete="new-password" name="writar_document_password"> <br>
                 <input class="button" type="submit" value="view document">
             </form>
@@ -39,4 +39,4 @@ if ($document->needs_password()) {
     }
 }
 
-render_template("viewing document", $document->render());
+render_template($document->title, $document->render());

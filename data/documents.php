@@ -19,7 +19,7 @@ function get_documents($database, $user_id): string
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
     foreach ($posts as $post) {
-        $docs .= "<li><a href='view.php?id={$post['id']}'>{$post['title']}</a></li>";
+        $docs .= "<li><sitelink to=\"view.php?id={$post['id']}\">{$post['title']}</sitelink></li>";
     }
 
     return $docs;
@@ -81,7 +81,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
         return "<p>sorry, could not create document.</p>";
     }
 
-    return "<p>document created. <a href='view.php?id=$id'>go to document</a></p>";
+    return "<p>document created. <sitelink to='view.php?id=$id'>go to document</sitelink></p>";
 }
 
 function get_document($database, $session, $document_id): document | bool
@@ -160,7 +160,7 @@ class document
 
         if ($this->id != "PREVIEW_NOT_STORED") {
             if ($this->session->get_username() == $this->username) {
-                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <!-- <a href='edit.php?id={$this->id}'>edit</a> | --> <a href='delete.php?id={$this->id}'>delete</a></small></p>";
+                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <!-- <sitelink to='edit.php?id={$this->id}'>edit</sitelink> | --> <sitelink to=\"delete.php?id={$this->id}\">delete</sitelink></small></p>";
                 $owner = true;
             }
         }

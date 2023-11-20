@@ -21,9 +21,9 @@ $content = <<<EOD
     <h3>identified as {$session->get_username()}</h3>
     
     <ul>
-       <li><a href="new.php">new document</a></li>
-       <li><a href="settings.php">settings</a></li>
-       <li><a href="logout.php">logout</a></li>
+       <li><sitelink to="new.php">new document</sitelink></li>
+       <li><sitelink to="settings.php">settings</sitelink></li>
+       <li><sitelink to="logout.php">logout</sitelink></li>
     </ul>
     
     <h3>documents</h3>
