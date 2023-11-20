@@ -22,7 +22,7 @@ $content = <<<EOD
        <li>extremely lightweight</li>
     </ul>
     
-    <p>writar does not store (or even accept) personal data. only username and password.</p>
+    <p>writar does not store or even accept personal data. only username and password.</p>
     
     <p>to publish and manage your documents, please identify.</p>
     

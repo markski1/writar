@@ -24,7 +24,7 @@ $content = <<<EOD
         </label>
         <label>
             <p>password</p>
-            <input class="field_input" placeholder="leave empty if no password desired" name="writar_password" style="width: 20rem">
+            <input class="field_input" placeholder="leave empty if no password desired" name="writar_password" type="password" style="width: 20rem">
         </label>
         <label>
             <p>document</p>

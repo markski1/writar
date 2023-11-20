@@ -23,7 +23,14 @@ if (isset($_POST['create'])) {
 }
 
 if (isset($_POST['preview'])) {
-    echo render_document($database, $title, $content, $session->get_username(), '0000-00-00 00:00:00');
+    $document_data['id'] = "PREVIEW_NOT_STORED";
+    $document_data['title'] = $title;
+    $document_data['content'] = $content;
+    $document_data['password'] = "";
+    $document_data['username'] = $session->get_username();
+    $document_data['created_at'] = "0000-00-00 00:00:00";
+    $document = new document($session, $document_data);
+    echo $document->render();
     exit;
 }
 

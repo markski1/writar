@@ -19,27 +19,10 @@ function get_documents($database, $user_id): string
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
     foreach ($posts as $post) {
-        $docs .= "<li><a href='view.php?id={$post['url_id']}'>{$post['title']}</a></li>";
+        $docs .= "<li><a href='view.php?id={$post['id']}'>{$post['title']}</a></li>";
     }
 
     return $docs;
-}
-
-function get_document($database, $document_id): string
-{
-    $query = $database->prepare("SELECT t.*, u.username FROM user_text as t INNER JOIN users as u ON t.user_id = u.id WHERE url_id = ?");
-    $query->bind_param("s", $document_id);
-    $query->execute();
-
-    $result = $query->get_result();
-
-    if ($result->num_rows < 1) {
-        return "document not found.";
-    }
-
-    $result = $result->fetch_array();
-
-    return render_document($database, $result['title'], $result['content'], $result['username'], $result['created_at'], $document_id);
 }
 
 function create_document($database, $title, $content, $password, $user_id): string
@@ -47,15 +30,15 @@ function create_document($database, $title, $content, $password, $user_id): stri
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
     while (true) {
-        $url_id = '';
+        $id = '';
 
         for ($i = 0; $i < 10; $i++) {
             $index = rand(0, strlen($characters) - 1);
-            $url_id .= $characters[$index];
+            $id .= $characters[$index];
         }
 
-        $query = $database->prepare("SELECT id FROM user_text WHERE url_id = ?");
-        $query->bind_param("s", $url_id);
+        $query = $database->prepare("SELECT id FROM user_text WHERE id = ?");
+        $query->bind_param("s", $id);
         $query->execute();
 
         $result = $query->get_result();
@@ -90,47 +73,91 @@ function create_document($database, $title, $content, $password, $user_id): stri
         $hashed_pword = '';
     }
 
-    $query = $database->prepare("INSERT INTO user_text (title, content, user_id, url_id, password) VALUES(?, ?, ?, ?, ?)");
-    $query->bind_param("ssiss", $title, $content, $user_id, $url_id, $hashed_pword);
+    $query = $database->prepare("INSERT INTO user_text (title, content, user_id, id, password) VALUES(?, ?, ?, ?, ?)");
+    $query->bind_param("ssiss", $title, $content, $user_id, $id, $hashed_pword);
     $success = $query->execute();
 
     if (!$success) {
         return "<p>sorry, could not create document.</p>";
     }
 
-    return "<p>document created. <a href='view.php?id=$url_id'>go to document</a></p>";
+    return "<p>document created. <a href='view.php?id=$id'>go to document</a></p>";
 }
 
-function render_document($database, $title, $content, $username, $datetime, $url_id = false): string
+function get_document($database, $session, $document_id): document | bool
 {
-    if (strlen($title) == 0) $title = "untitled";
-    if (strlen($content) == 0) $content = "document is empty.";
+    $query = $database->prepare("SELECT t.*, u.username FROM user_text as t INNER JOIN users as u ON t.user_id = u.id WHERE t.id = ?");
+    $query->bind_param("s", $document_id);
+    $query->execute();
 
-    $title = htmlspecialchars($title);
-    $content = htmlspecialchars($content);
+    $result = $query->get_result();
 
-    $Parsedown = new Parsedown();
+    if ($result->num_rows < 1) {
+        return false;
+    }
 
-    $content = $Parsedown->text($content);
+    return new document($session, $result->fetch_array());
+}
 
-    $render = "<h2>{$title}</h2>";
 
-    $owner = false;
+class document
+{
+    private session $session;
+    private string $id;
+    private string $username;
+    private string $title;
+    private string $content;
+    private string $created_at;
+    private string $password;
 
-    if ($url_id) {
-        $session = new session($database);
+    function __construct($session, $document_data)
+    {
+        $this->session = $session;
+        $Parsedown = new Parsedown();
 
-        if ($session->get_username() == $username) {
-            $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$datetime}</span> | <a href='edit.php?id={$url_id}'>edit</a> | <a href='delete.php?id={$url_id}'>delete</a></small></p>";
-            $owner = true;
+        $this->title = htmlspecialchars($document_data['title']);
+        $this->content = htmlspecialchars($document_data['content']);
+
+        if (strlen($this->title) == 0) $this->title = "untitled";
+        if (strlen($this->content) == 0) $this->content = "document is empty.";
+
+        $this->content = $Parsedown->text($this->content);
+
+        $this->password = $document_data['password'];
+        $this->username = $document_data['username'];
+        $this->created_at = $document_data['created_at'];
+        $this->id = $document_data['id'];
+    }
+
+    function needs_password(): bool
+    {
+        return strlen($this->password) != 0;
+    }
+
+    function check_password($password): bool
+    {
+        return password_verify($password, $this->password);
+    }
+
+    function render(): string
+    {
+        $render = "<h2>{$this->title}</h2>";
+
+        $owner = false;
+
+        if ($this->id != "PREVIEW_NOT_STORED") {
+            if ($this->session->get_username() == $this->username) {
+                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <a href='edit.php?id={$this->id}'>edit</a> | <a href='delete.php?id={$this->id}'>delete</a></small></p>";
+                $owner = true;
+            }
         }
+
+        if (!$owner) {
+            $render .= "<p><small>written by <b>{$this->username}</b> <span style='color: #777777'>at {$this->created_at}</span></small></p>";
+        }
+
+        $render .= "<hr><div class='document_content'>{$this->content}</div>";
+
+        return $render;
     }
-
-    if (!$owner) {
-        $render .= "<p><small>written by <b>{$username}</b> <span style='color: #777777'>at {$datetime}</span></small></p>";
-    }
-
-    $render .= "<hr><div class='document_content'>{$content}</div>";
-
-    return $render;
 }
