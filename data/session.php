@@ -146,7 +146,7 @@ class session {
     function get_username(): string
     {
         // set in the constructor.
-        if (isset($_COOKIE['session_token'])) {
+        if (isset($this->username)) {
             return $this->username;
         }
         return "[invalid]";
@@ -155,7 +155,7 @@ class session {
     function get_id(): int
     {
         // set in the constructor.
-        if (isset($_COOKIE['session_token'])) {
+        if (isset($this->id)) {
             return $this->id;
         }
         return -1;

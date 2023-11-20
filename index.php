@@ -31,7 +31,7 @@ $content = <<<EOD
         <input class="field_input" placeholder="password" type="password" name="writar_password"> <br>
         <input class="button" name="login" type="submit" value="login"> <input class="button" name="register" type="submit" value="make an account">
     </form>
-    <p><small id="login_result">awaiting action.</small></p>
+    <p><small id="login_result"></small></p>
 
 
 EOD;

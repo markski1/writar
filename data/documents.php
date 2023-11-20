@@ -99,13 +99,20 @@ function get_document($database, $session, $document_id): document | bool
     return new document($session, $result->fetch_array());
 }
 
+function delete_document($database, $document_id): void
+{
+    $query = $database->prepare("DELETE FROM user_text WHERE id = ?");
+    $query->bind_param("s", $document_id);
+    $query->execute();
+}
+
 
 class document
 {
     private session $session;
-    private string $id;
+    public string $id;
     private string $username;
-    private string $title;
+    public string $title;
     private string $content;
     private string $created_at;
     private string $password;
@@ -114,9 +121,10 @@ class document
     {
         $this->session = $session;
         $Parsedown = new Parsedown();
+        $Parsedown->setSafeMode(true);
 
         $this->title = htmlspecialchars($document_data['title']);
-        $this->content = htmlspecialchars($document_data['content']);
+        $this->content = $document_data['content'];
 
         if (strlen($this->title) == 0) $this->title = "untitled";
         if (strlen($this->content) == 0) $this->content = "document is empty.";
@@ -139,6 +147,11 @@ class document
         return password_verify($password, $this->password);
     }
 
+    function is_owner($session): bool
+    {
+        return $session->get_username() == $this->username;
+    }
+
     function render(): string
     {
         $render = "<h2>{$this->title}</h2>";
@@ -147,7 +160,7 @@ class document
 
         if ($this->id != "PREVIEW_NOT_STORED") {
             if ($this->session->get_username() == $this->username) {
-                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <a href='edit.php?id={$this->id}'>edit</a> | <a href='delete.php?id={$this->id}'>delete</a></small></p>";
+                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <!-- <a href='edit.php?id={$this->id}'>edit</a> | --> <a href='delete.php?id={$this->id}'>delete</a></small></p>";
                 $owner = true;
             }
         }

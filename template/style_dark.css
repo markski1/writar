@@ -1,0 +1,30 @@
+body {
+    background-color: #222222;
+    color: #EEEEEE;
+}
+
+h1 {
+    color: #DDDDDD;
+}
+
+a {
+    color: #FFFFFF;
+}
+
+.field_input {
+    color: #DDDDDD;
+    background-color: #111111;
+    border: 1px solid black;
+}
+
+.text_input {
+    color: #DDDDDD;
+    background-color: #111111;
+    border: 1px solid black;
+}
+
+.button {
+    color: #DDDDDD;
+    background-color: #111111;
+    border: 1px solid black;
+}

@@ -10,6 +10,11 @@ $session = new session($database);
 
 $document = get_document($database, $session, $_GET['id']);
 
+if (!$document) {
+    render_template("deleting document", "<p>document does not exist.</p>");
+    exit;
+}
+
 if ($document->needs_password()) {
     if (isset($_POST['writar_document_password'])) {
         if (!$document->check_password($_POST['writar_document_password'])) {
@@ -20,10 +25,10 @@ if ($document->needs_password()) {
     else {
         $password_required_form = <<<EOD
 
-            <h3>A password is required to view this document.</h3>
+            <h3>a password is required to view this document</h3>
             
             <form method="POST">
-                <input class="field_input" placeholder="enter document password" type="password" name="writar_document_password"> <br>
+                <input class="field_input" placeholder="enter document password" type="password" autocomplete="new-password" name="writar_document_password"> <br>
                 <input class="button" type="submit" value="view document">
             </form>
 

@@ -3,13 +3,19 @@
     <head>
         <title><!-- %%% SITE_TITLE %%% --> - writar</title>
 
-        <link rel="stylesheet" type="text/css" href="template/style.css">
+        <!-- %%% STYLE_SHEET %%% -->
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta charset="utf-8">
     </head>
     <body>
         <header>
-            <a href="index.php" style="text-decoration: none"><h1>writar</h1></a>
+            <div style="float: left">
+                <a href="index.php" style="text-decoration: none"><h1>writar</h1></a>
+            </div>
+            <div style="float: right; margin-top: 1rem;">
+                <p><small><a href="action/switch.php?return=<!-- %%% CURRENT_URL %%% -->">switch light/dark mode</a></small></p>
+            </div>
+            <div style="clear: both;"></div>
         </header>
         <main>
             <!-- %%% SITE_CONTENT %%% -->

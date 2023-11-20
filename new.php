@@ -20,11 +20,11 @@ $content = <<<EOD
     <form hx-post="./action/create-document.php" hx-target="#creation_result">
         <label>
             <p>title</p>
-            <input class="field_input" placeholder="new document" name="writar_title" style="width: 20rem">
+            <input class="field_input" autocomplete="off" placeholder="new document" name="writar_title" style="width: 20rem">
         </label>
         <label>
             <p>password</p>
-            <input class="field_input" placeholder="leave empty if no password desired" name="writar_password" type="password" style="width: 20rem">
+            <input class="field_input" autocomplete="new-password" placeholder="leave empty if no password desired" name="writar_password" type="password" style="width: 20rem">
         </label>
         <label>
             <p>document</p>
