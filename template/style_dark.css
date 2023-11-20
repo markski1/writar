@@ -28,3 +28,7 @@ a {
     background-color: #111111;
     border: 1px solid black;
 }
+
+pre, code {
+    background-color: #444444;
+}
