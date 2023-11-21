@@ -1,17 +1,6 @@
 <?php
-include 'data/db.php';
-include 'data/session.php';
-include 'data/documents.php';
-include 'template/engine.php';
-
-$database = db_connect();
-
-$session = new session($database);
-
-if (!$session->is_logged_in()) {
-    Header('Location: index.php');
-    exit;
-}
+include 'dependencies/init.php';
+init($database, $session, "login_required");
 
 $document_list = get_documents($database, $session->get_id());
 

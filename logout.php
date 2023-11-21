@@ -2,8 +2,6 @@
 
 include_once 'data/session.php';
 
-$session = new session;
-
-$session->logout();
+(new session)->logout();
 
 header('Location: index.php');

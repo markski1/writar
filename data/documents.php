@@ -67,6 +67,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
         if (strlen($password) > 72) {
             return "password can't be longer than 72 characters. no, this doesn't mean it's being stored in plaintext.";
         }
+        // hash the plaintext password to bcrypt
         $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
     }
     else {
@@ -81,7 +82,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
         return "<p>sorry, could not create document.</p>";
     }
 
-    return "<p>document created. <sitelink to='view.php?id=$id'>go to document</sitelink></p>";
+    return "<p>document created. <a href='view.php?id={$id}' hx-post='view.php?id={$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
 }
 
 function get_document($database, $session, $document_id): document | bool
@@ -142,9 +143,13 @@ class document
         return strlen($this->password) != 0;
     }
 
-    function check_password($password): bool
+    function password_unlock($entered_password): bool
     {
-        return password_verify($password, $this->password);
+        if (password_verify($entered_password, $this->password)) {
+            // eventually do encryption
+            return true;
+        }
+        return false;
     }
 
     function is_owner($session): bool

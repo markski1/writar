@@ -1,12 +1,6 @@
 <?php
-include 'data/db.php';
-include 'data/session.php';
-include 'data/documents.php';
-include 'template/engine.php';
-
-$database = db_connect();
-
-$session = new session($database);
+include 'dependencies/init.php';
+init($database, $session);
 
 $document = get_document($database, $session, $_GET['id']);
 
@@ -17,8 +11,8 @@ if (!$document) {
 
 if ($document->needs_password()) {
     if (isset($_POST['writar_document_password'])) {
-        if (!$document->check_password($_POST['writar_document_password'])) {
-            render_template("password required", "<p>Wrong password.</p>");
+        if (!$document->password_unlock($_POST['writar_document_password'])) {
+            render_template("password required", "<h3>access denied</h3><p>wrong password.</p>");
             exit;
         }
     }

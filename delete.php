@@ -1,12 +1,6 @@
 <?php
-include 'data/db.php';
-include 'data/session.php';
-include 'data/documents.php';
-include 'template/engine.php';
-
-$database = db_connect();
-
-$session = new session($database);
+include 'dependencies/init.php';
+init($database, $session, "login_required");
 
 $document = get_document($database, $session, $_GET['id']);
 
@@ -30,7 +24,7 @@ else {
 
         <h3>deleting document: {$document->title}</h3>
         
-        <form hx-post="" hx-target="main">
+        <form hx-post hx-target="main">
             <p>please confirm this action</p>
             <input class="button" type="submit" value="delete this document" name="confirm">
         </form>

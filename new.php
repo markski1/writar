@@ -1,16 +1,6 @@
 <?php
-include 'data/db.php';
-include 'data/session.php';
-include 'template/engine.php';
-
-$database = db_connect();
-
-$session = new session($database);
-
-if (!$session->is_logged_in()) {
-    Header('Location: index.php');
-    exit;
-}
+include 'dependencies/init.php';
+init($database, $session, "login_required");
 
 $content = <<<EOD
 
@@ -23,7 +13,7 @@ $content = <<<EOD
             <input class="field_input" autocomplete="off" placeholder="new document" name="writar_title" style="width: 20rem">
         </label>
         <label>
-            <p>password</p>
+            <p>password<!--<br /><small>used as an aes256 encryption passkey.</small>--!></p>
             <input class="field_input" autocomplete="new-password" placeholder="leave empty if no password desired" name="writar_password" type="password" style="width: 20rem">
         </label>
         <label>

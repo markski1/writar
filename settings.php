@@ -1,16 +1,6 @@
 <?php
-include 'template/engine.php';
-include 'data/db.php';
-include 'data/session.php';
-
-$database = db_connect();
-
-$session = new session($database);
-
-if (!$session->is_logged_in()) {
-    Header('Location: index.php');
-    exit;
-}
+include 'dependencies/init.php';
+init($database, $session, "login_required");
 
 $content = <<<EOD
 
@@ -18,7 +8,6 @@ $content = <<<EOD
     <h3>settings</h3>
     
     <ul>
-       <li><a href="#">change username</a></li>
        <li><a href="#">change password</a></li>
        <li><a href="#">delete account</a></li>
     </ul>

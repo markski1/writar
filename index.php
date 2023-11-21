@@ -1,9 +1,6 @@
 <?php
-include 'data/db.php';
-include 'data/session.php';
-include 'template/engine.php';
-
-$session = new session;
+include 'dependencies/init.php';
+init($database, $session);
 
 if ($session->is_logged_in()) {
     Header('Location: panel.php');
