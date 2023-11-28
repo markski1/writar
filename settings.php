@@ -17,4 +17,5 @@ $content = <<<EOD
 
 EOD;
 
-render_template("panel", $content);
+$site = new Template("settings");
+$site->render($content);

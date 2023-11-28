@@ -10,9 +10,9 @@ $content = <<<EOD
     <h3>identified as {$session->get_username()}</h3>
     
     <ul>
-       <li><sitelink to="new.php">new document</sitelink></li>
-       <li><sitelink to="settings.php">settings</sitelink></li>
-       <li><sitelink to="logout.php">logout</sitelink></li>
+       <li><sitelink to="new">new document</sitelink></li>
+       <li><sitelink to="settings">settings</sitelink></li>
+       <li><sitelink to="logout">logout</sitelink></li>
     </ul>
     
     <h3>documents</h3>
@@ -24,4 +24,5 @@ $content = <<<EOD
 
 EOD;
 
-render_template("panel", $content);
+$site = new Template("panel");
+$site->render($content);

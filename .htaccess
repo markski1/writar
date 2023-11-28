@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Remove .php extension
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}\.php -f
+  RewriteRule ^([^/]+)/?$ $1.php [L]
+
+  # Routes
+  RewriteRule ^doc/([^/]+)/?$ view.php?id=$1 [QSA,L]
+  RewriteRule ^edit/([^/]+)/?$ edit.php?id=$1 [QSA,L]
+  RewriteRule ^delete/([^/]+)/?$ delete.php?id=$1 [QSA,L]
+
+  # Redirect requests to index.php if the file doesn't exist
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

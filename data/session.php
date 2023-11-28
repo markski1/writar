@@ -84,7 +84,7 @@ class session {
         $this->id = $user_id;
         $this->isLoggedIn = true;
 
-        return "correctly identified. <a href='panel.php' hx-post='panel.php' hx-push-url='true' hx-target='main'>continue</a>";
+        return "correctly identified. <a href='panel' hx-post='panel' hx-push-url='true' hx-target='main'>continue</a>";
     }
 
     function register($username, $password): string

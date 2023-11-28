@@ -32,4 +32,5 @@ $content = <<<EOD
 
 EOD;
 
-render_template("writing document", $content);
+$site = new Template("writing document");
+$site->render($content);

@@ -5,14 +5,17 @@ init($database, $session);
 $document = get_document($database, $session, $_GET['id']);
 
 if (!$document) {
-    render_template("not found", "<p>document does not exist.</p>");
+    $site = new Template("not found");
+    $site->set_description("this document does not exist");
+    $site->render("<p>document does not exist.</p>");
     exit;
 }
 
 if ($document->needs_password()) {
     if (isset($_POST['writar_document_password'])) {
         if (!$document->password_unlock($_POST['writar_document_password'])) {
-            render_template("password required", "<h3>access denied</h3><p>wrong password.</p>");
+            $site = new Template("wrong password");
+            $site->render("<h3>access denied</h3><p>wrong password.</p>");
             exit;
         }
     }
@@ -28,9 +31,13 @@ if ($document->needs_password()) {
 
         EOD;
 
-        render_template("password required", $password_required_form);
+        $site = new Template("passworded document");
+        $site->set_description("this document requires a password");
+        $site->render($password_required_form);
         exit;
     }
 }
 
-render_template($document->title, $document->render());
+$site = new Template($document->title);
+$site->set_description("a document by {$document->author}");
+$site->render($document->render());

@@ -19,7 +19,7 @@ function get_documents($database, $user_id): string
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
     foreach ($posts as $post) {
-        $docs .= "<li><sitelink to=\"view.php?id={$post['id']}\">{$post['title']}</sitelink></li>";
+        $docs .= "<li><sitelink to=\"doc/{$post['id']}\">{$post['title']}</sitelink></li>";
     }
 
     return $docs;
@@ -82,7 +82,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
         return "<p>sorry, could not create document.</p>";
     }
 
-    return "<p>document created. <a href='view.php?id={$id}' hx-post='view.php?id={$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
+    return "<p>document created. <a href='../doc/{$id}' hx-post='../doc/{$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
 }
 
 function get_document($database, $session, $document_id): document | bool
@@ -112,7 +112,7 @@ class document
 {
     private session $session;
     public string $id;
-    private string $username;
+    public string $author;
     public string $title;
     private string $content;
     private string $created_at;
@@ -133,7 +133,7 @@ class document
         $this->content = $Parsedown->text($this->content);
 
         $this->password = $document_data['password'];
-        $this->username = $document_data['username'];
+        $this->author = $document_data['username'];
         $this->created_at = $document_data['created_at'];
         $this->id = $document_data['id'];
     }
@@ -154,7 +154,7 @@ class document
 
     function is_owner($session): bool
     {
-        return $session->get_username() == $this->username;
+        return $session->get_username() == $this->author;
     }
 
     function render(): string
@@ -164,14 +164,14 @@ class document
         $owner = false;
 
         if ($this->id != "PREVIEW_NOT_STORED") {
-            if ($this->session->get_username() == $this->username) {
-                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <!-- <sitelink to='edit.php?id={$this->id}'>edit</sitelink> | --> <sitelink to=\"delete.php?id={$this->id}\">delete</sitelink></small></p>";
+            if ($this->session->get_username() == $this->author) {
+                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <!-- <sitelink to='edit/{$this->id}'>edit</sitelink> | --> <sitelink to=\"delete/{$this->id}\">delete</sitelink></small></p>";
                 $owner = true;
             }
         }
 
         if (!$owner) {
-            $render .= "<p><small>written by <b>{$this->username}</b> <span style='color: #777777'>at {$this->created_at}</span></small></p>";
+            $render .= "<p><small>written by <b>{$this->author}</b> <span style='color: #777777'>at {$this->created_at}</span></small></p>";
         }
 
         $render .= "<hr><div class='document_content'>{$this->content}</div>";

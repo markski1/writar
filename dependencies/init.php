@@ -12,7 +12,7 @@ function init(&$database, &$session, $condition = ""): void
 
     if ($condition == "login_required") {
         if (!$session->is_logged_in()) {
-            Header('Location: index.php');
+            Header('Location: ../');
             exit;
         }
     }

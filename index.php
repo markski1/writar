@@ -3,7 +3,7 @@ include 'dependencies/init.php';
 init($database, $session);
 
 if ($session->is_logged_in()) {
-    Header('Location: panel.php');
+    Header('Location: panel');
     exit;
 }
 
@@ -33,4 +33,6 @@ $content = <<<EOD
 
 EOD;
 
-render_template("home", $content);
+$site = new Template("home");
+$site->set_description("writar is a free, open source document sharing platform.");
+$site->render($content);
