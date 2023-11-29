@@ -5,16 +5,17 @@ class Template {
     private string $title;
     private string $description;
 
-    public function __construct($title) {
+    public function __construct(string $title) {
         $this->title = $title;
         $this->description = "";
     }
 
-    function set_description($description) {
+    function set_description(string $description): void
+    {
         $this->description = $description;
     }
 
-    function render($content): void
+    function render(string $content): void
     {
         $sitelink_pattern = '/<sitelink to="([^"]*)">([^<]+)<\/sitelink>/';
 
@@ -45,7 +46,7 @@ class Template {
 
         // define if darkmode and insert style sheets
         $style_header = '@import "../template/style.css";';
-        if (isset($_COOKIE['preferred_theme']) && $_COOKIE['preferred_theme'] != "light") {
+        if (!isset($_COOKIE['preferred_theme']) || $_COOKIE['preferred_theme'] == "dark") {
             $style_header .= '@import "../template/style_dark.css";';
         }
         $site = str_replace("<!-- %%% STYLE_SHEET %%% -->", $style_header, $site);

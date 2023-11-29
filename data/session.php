@@ -84,7 +84,7 @@ class session {
         $this->id = $user_id;
         $this->isLoggedIn = true;
 
-        return "correctly identified. <a href='panel' hx-post='panel' hx-push-url='true' hx-target='main'>continue</a>";
+        return "<script>window.location.replace('/panel');</script>";
     }
 
     function register($username, $password): string
@@ -123,6 +123,55 @@ class session {
         }
 
         return 'account registered. you may now click "login".';
+    }
+
+    function change_password($current_password, $new_password): bool
+    {
+        $query = $this->mysqli->prepare("SELECT * FROM users WHERE id = ?");
+        $query->bind_param("i", $this->id);
+        $query->execute();
+
+        $result = $query->get_result();
+
+        if ($result->num_rows < 1) {
+            return false;
+        }
+
+        $result = $result->fetch_array();
+
+        if (!password_verify($current_password, $result['password'])) {
+            var_dump($result['password']);
+            return false;
+        }
+
+        $hashed_pword = password_hash($new_password, PASSWORD_BCRYPT);
+
+        $query = $this->mysqli->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $query->bind_param("si", $hashed_pword, $this->id);
+        $success = $query->execute();
+
+        if (!$success) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function delete_account(): bool
+    {
+        $query = $this->mysqli->prepare("DELETE FROM users WHERE id = ?");
+        $query->bind_param("i", $this->id);
+        $success = $query->execute();
+
+        if (!$success) return false;
+
+        $query = $this->mysqli->prepare("DELETE FROM documents WHERE user_id = ?");
+        $query->bind_param("i", $this->id);
+        $success = $query->execute();
+
+        if (!$success) return false;
+
+        return true;
     }
 
     function is_logged_in(): bool

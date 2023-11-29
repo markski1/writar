@@ -74,6 +74,21 @@ code, pre {
     padding: .75rem 1.2rem;
 }
 
+.radiobtn {
+    margin: 0 .5rem;
+}
+
 .document_content {
     word-wrap: break-word;
+}
+
+.listed_post {
+    width: 100%;
+    padding: .1rem 1rem;
+    margin-bottom: 1rem;
+    background-color: #00000033;
+}
+
+.light_text {
+    color: #444444;
 }

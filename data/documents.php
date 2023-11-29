@@ -6,26 +6,34 @@ if (!@include '../dependencies/Parsedown.php') {
 
 function get_documents($database, $user_id): string
 {
-    $query = $database->prepare("SELECT * FROM user_text WHERE user_id = ?");
+    $query = $database->prepare("SELECT id, title, visits FROM documents WHERE user_id = ?");
     $query->bind_param("i", $user_id);
     $query->execute();
 
     $result = $query->get_result();
 
     if ($result->num_rows < 1) {
-        return "<li>no documents.</li>";
+        return "<p>no documents.</p>";
     }
 
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
     foreach ($posts as $post) {
-        $docs .= "<li><sitelink to=\"doc/{$post['id']}\">{$post['title']}</sitelink></li>";
+        $docs .= <<<EOD
+                
+                <div class="listed_post">
+                    <h3>{$post['title']}</h3>
+                    <p><sitelink to="doc/{$post['id']}">view</sitelink> - <sitelink to="delete/{$post['id']}">delete</sitelink><br>    
+                    <span class="light_text">{$post['visits']} visits.</span></p>
+                </div>
+
+                EOD;
     }
 
     return $docs;
 }
 
-function create_document($database, $title, $content, $password, $user_id): string
+function create_document($database, $title, $content, $password, $user_id, $privacy): string
 {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
@@ -37,7 +45,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
             $id .= $characters[$index];
         }
 
-        $query = $database->prepare("SELECT id FROM user_text WHERE id = ?");
+        $query = $database->prepare("SELECT id FROM documents WHERE id = ?");
         $query->bind_param("s", $id);
         $query->execute();
 
@@ -74,8 +82,8 @@ function create_document($database, $title, $content, $password, $user_id): stri
         $hashed_pword = '';
     }
 
-    $query = $database->prepare("INSERT INTO user_text (title, content, user_id, id, password) VALUES(?, ?, ?, ?, ?)");
-    $query->bind_param("ssiss", $title, $content, $user_id, $id, $hashed_pword);
+    $query = $database->prepare("INSERT INTO documents (title, content, user_id, id, password, privacy) VALUES(?, ?, ?, ?, ?, ?)");
+    $query->bind_param("ssissi", $title, $content, $user_id, $id, $hashed_pword, $privacy);
     $success = $query->execute();
 
     if (!$success) {
@@ -87,7 +95,7 @@ function create_document($database, $title, $content, $password, $user_id): stri
 
 function get_document($database, $session, $document_id): document | bool
 {
-    $query = $database->prepare("SELECT t.*, u.username FROM user_text as t INNER JOIN users as u ON t.user_id = u.id WHERE t.id = ?");
+    $query = $database->prepare("SELECT t.*, u.username FROM documents as t INNER JOIN users as u ON t.user_id = u.id WHERE t.id = ?");
     $query->bind_param("s", $document_id);
     $query->execute();
 
@@ -97,12 +105,12 @@ function get_document($database, $session, $document_id): document | bool
         return false;
     }
 
-    return new document($session, $result->fetch_array());
+    return new document($database, $session, $result->fetch_array());
 }
 
 function delete_document($database, $document_id): void
 {
-    $query = $database->prepare("DELETE FROM user_text WHERE id = ?");
+    $query = $database->prepare("DELETE FROM documents WHERE id = ?");
     $query->bind_param("s", $document_id);
     $query->execute();
 }
@@ -111,6 +119,7 @@ function delete_document($database, $document_id): void
 class document
 {
     private session $session;
+    private mysqli $database;
     public string $id;
     public string $author;
     public string $title;
@@ -118,9 +127,10 @@ class document
     private string $created_at;
     private string $password;
 
-    function __construct($session, $document_data)
+    function __construct($database, $session, $document_data)
     {
         $this->session = $session;
+        $this->database = $database;
         $Parsedown = new Parsedown();
         $Parsedown->setSafeMode(true);
 
@@ -163,15 +173,19 @@ class document
 
         $owner = false;
 
+        // "PREVIEW_NOT_STORED" as the id means this is a preview in the document creator.
         if ($this->id != "PREVIEW_NOT_STORED") {
+            $query = $this->database->prepare("UPDATE documents SET visits = visits + 1 WHERE id = ?");
+            $query->bind_param("s", $this->id);
+            $query->execute();
             if ($this->session->get_username() == $this->author) {
-                $render .= "<p><small>written by <b>you</b> <span style='color: #777777'>at {$this->created_at}</span> | <!-- <sitelink to='edit/{$this->id}'>edit</sitelink> | --> <sitelink to=\"delete/{$this->id}\">delete</sitelink></small></p>";
+                $render .= "<p><small>written by <b>you</b> <span class='light_text'>at {$this->created_at}</span> | <sitelink to=\"delete/{$this->id}\">delete</sitelink></small></p>";
                 $owner = true;
             }
         }
 
         if (!$owner) {
-            $render .= "<p><small>written by <b>{$this->author}</b> <span style='color: #777777'>at {$this->created_at}</span></small></p>";
+            $render .= "<p><small>written by <b>{$this->author}</b> <span class='light_text'>at {$this->created_at}</span></small></p>";
         }
 
         $render .= "<hr><div class='document_content'>{$this->content}</div>";
