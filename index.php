@@ -10,16 +10,20 @@ if ($session->is_logged_in()) {
 $content = <<<EOD
 
 
-    <p>writar is a free text hosting and sharing service.</p>
+    <p>writar is a free text hosting and sharing service, currently in <sitelink to="beta">beta</sitelink>.</p>
+    
+    <p>features:</p>
     
     <ul>
        <li>markdown support</li>
        <li>up to 50,000 characters per document</li>
-       <li>optional password protection</li>
        <li>extremely lightweight</li>
+       <li>document privacy levels: public, private, passworded</li>
+       <li>no personal data stored</li>
+       <li>no adverts, ever</li>
     </ul>
     
-    <p>writar does not store or even accept personal data. only username and password.</p>
+    <p>preview an <sitelink to="doc/tHKOkN0mUN">example document</sitelink>.</p>
     
     <p>to publish and manage your documents, please identify.</p>
     

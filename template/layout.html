@@ -4,7 +4,7 @@
         <title><!-- %%% SITE_TITLE %%% --> - writar</title>
 
         <meta name="description" content="<!-- %%% SITE_DESCRIPTION %%% -->">
-        <meta name="og:title" content="<!-- %%% SITE_TITLE %%% --> - markski" />
+        <meta name="og:title" content="<!-- %%% SITE_TITLE %%% --> - writar" />
         <meta property="og:description" content="<!-- %%% SITE_DESCRIPTION %%% -->" />
 
         <style id="writar_style">
@@ -16,7 +16,12 @@
     <body>
         <header>
             <div style="float: left; margin-left: 2rem">
-                <a href='../panel' hx-post='../panel' hx-push-url='true' hx-target='main' style="text-decoration: none"><h1>writar</h1></a>
+                <a href='../panel' hx-post='../panel' hx-push-url='true' hx-target='main' style="text-decoration: none;">
+                    <span style="font-size: 2.2rem; font-weight: 700; margin: 1.1rem 0 0; display: block;">writar</span>
+                </a>
+                <a href='../beta' hx-post='../beta' hx-push-url='true' hx-target='main' style="text-decoration: none;">
+                    <span class="light_text" style="display: block; font-size: .8rem; margin: -.2rem 0 1rem;">beta</span>
+                </a>
             </div>
             <div style="float: right; margin-top: 1rem; margin-right: 2rem;">
                 <p><small><a href="#" hx-post="../action/switch.php" hx-target="#writar_style">dark/light mode</a></small></p>

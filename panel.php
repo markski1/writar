@@ -12,14 +12,15 @@ $content = <<<EOD
     <ul>
        <li><sitelink to="new">new document</sitelink></li>
        <li><sitelink to="settings">settings</sitelink></li>
+       <li><sitelink to="beta">about the beta</sitelink></li>
        <li><sitelink to="logout">logout</sitelink></li>
     </ul>
     
     <h3>documents</h3>
     
-    <ul>
+    <div>
         {$document_list}
-    </ul>
+    </div>
 
 
 EOD;
