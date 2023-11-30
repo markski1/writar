@@ -205,9 +205,9 @@ class document
         if (strlen($this->title) == 0) $this->title = "untitled";
         if (strlen($this->content) == 0) $this->content = "document is empty.";
 
-        $this->password = $document_data['password'];
-        $this->author = $document_data['username'];
-        $this->created_at = $document_data['created_at'];
+        $this->password = $document_data['password'] ?? '';
+        $this->author = $document_data['username'] ?? 'unknown';
+        $this->created_at = $document_data['created_at'] ?? 'unknown';
         $this->id = $document_data['id'];
     }
 
