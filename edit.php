@@ -24,11 +24,11 @@ $content = <<<EOD
     <form hx-post="../action/create-document.php" hx-target="#creation_result">
         <label>
             <p>title</p>
-            <input class="field_input" autocomplete="off" placeholder="new document" value="{$document->title}" name="writar_title" style="width: 20rem">
+            <input required class="field_input" autocomplete="off" placeholder="new document" value="{$document->title}" name="writar_title" style="width: 20rem">
         </label>
         <label>
             <p>document<br><small class="light_text">use markdown for formatting. <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">learn more</a></small></p>
-            <textarea class="text_input" name="writar_document" placeholder="once upon a time...">{$document->content}</textarea>
+            <textarea required class="text_input" name="writar_document" placeholder="once upon a time...">{$document->content}</textarea>
         </label>
         <p><small>please select privacy level again if document wasn't public.</small></p>
         <div style="margin-bottom: 2rem;">

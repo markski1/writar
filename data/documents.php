@@ -51,15 +51,16 @@ function create_document($database, $id, $title, $content, $password, $user_id, 
         return "<p>a document may not be longer than 50,000 characters. currently is {$formatted_content_length}.</p>";
     }
 
-    if (strlen($password) > 0) {
-        if (strlen($password) > 72) {
-            return "password can't be longer than 72 characters. no, this doesn't mean it's being stored in plaintext.";
+    if ($privacy == 2) {
+        if (strlen($password) > 0) {
+            if (strlen($password) > 72) {
+                return "password can't be longer than 72 characters. no, this doesn't mean it's being stored in plaintext.";
+            }
+            // hash the plaintext password to bcrypt
+            $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
+        } else {
+            return "<p>enter a password, or change privacy level.</p>";
         }
-        // hash the plaintext password to bcrypt
-        $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
-    }
-    else {
-        $hashed_pword = '';
     }
 
     // if $id is null, we're creating a document, otherwise we're updating.

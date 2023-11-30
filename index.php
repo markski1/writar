@@ -28,8 +28,8 @@ $content = <<<EOD
     <p>to publish and manage your documents, please identify.</p>
     
     <form hx-post="./action/identify.php" hx-target="#login_result">
-        <input class="field_input" placeholder="username" name="writar_username"> <br>
-        <input class="field_input" placeholder="password" type="password" name="writar_password"> <br>
+        <input required class="field_input" placeholder="username" name="writar_username"> <br>
+        <input required class="field_input" placeholder="password" type="password" name="writar_password"> <br>
         <input class="button" name="login" type="submit" value="login"> <input class="button" name="register" type="submit" value="make an account">
     </form>
     <p><small id="login_result"></small></p>

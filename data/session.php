@@ -4,6 +4,7 @@ class session {
     private mysqli $mysqli;
     private string $username;
     private string $last_op;
+    private string $email;
     private int $id;
     private bool $isLoggedIn = false;
 
@@ -19,7 +20,7 @@ class session {
         // both these cookies indicate a session is locally set.
         if (isset($_COOKIE['user_id']) && isset($_COOKIE['session_token'])) {
             // if they exist, every user will have a session key in the database.
-            $query = $this->mysqli->prepare("SELECT id, username, last_op FROM users WHERE session_token=? AND id=?");
+            $query = $this->mysqli->prepare("SELECT id, username, email, last_op FROM users WHERE session_token=? AND id=?");
             $query->bind_param("ss", $_COOKIE['session_token'], $_COOKIE['user_id']);
             $query->execute();
 
@@ -30,6 +31,7 @@ class session {
                 $result = $result->fetch_array();
                 // within this session object, cache username, id and session status.
                 $this->username = $result['username'];
+                $this->email = $result['email'] ?? 'not set';
                 $this->id = $result['id'];
                 $this->last_op = $result['last_op'];
                 $this->isLoggedIn = true;
@@ -180,6 +182,23 @@ class session {
         return true;
     }
 
+    function change_email($email): bool
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $query = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
+            $query->bind_param("si", $email, $this->id);
+            $success = $query->execute();
+
+            if (!$success) {
+                return false;
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function delete_account(): bool
     {
         $query = $this->mysqli->prepare("DELETE FROM users WHERE id = ?");
@@ -231,6 +250,15 @@ class session {
             return $this->id;
         }
         return -1;
+    }
+
+    function get_email(): string
+    {
+        // set in the constructor.
+        if (isset($this->email)) {
+            return $this->email;
+        }
+        return "[invalid]";
     }
 
     function can_do_operation(int $seconds): bool

@@ -11,6 +11,7 @@ $content = <<<EOD
     
     <ul>
        <li><a href="#" hx-get="../components/change-password.php" hx-target="#settings">change password</a></li>
+       <li><a href="#" hx-get="../components/set-email.php" hx-target="#settings">set e-mail</a></li>
        <li><a href="#" hx-get="../action/delete-account.php" hx-target="main" hx-confirm="are you sure? all your documents will be deleted, this cannot be undone.">delete account</a></li>
        <li><a href="#" hx-get="../components/attributions.html" hx-target="#settings">third party attributions</a></li>
     </ul>

@@ -10,11 +10,11 @@ $content = <<<EOD
     <form hx-post="./action/create-document.php" hx-target="#creation_result">
         <label>
             <p>title</p>
-            <input class="field_input" autocomplete="off" placeholder="new document" name="writar_title" style="width: 20rem">
+            <input required class="field_input" autocomplete="off" placeholder="new document" name="writar_title" style="width: 20rem">
         </label>
         <label>
             <p>document<br><small class="light_text" >use markdown for formatting. <a href="https://www.markdownguide.org/basic-syntax/" target="_blank">learn more</a></small></p>
-            <textarea class="text_input" name="writar_document" placeholder="once upon a time..."></textarea>
+            <textarea required class="text_input" name="writar_document" placeholder="once upon a time..."></textarea>
         </label>
         <br>
         

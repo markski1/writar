@@ -38,6 +38,14 @@ a {
     color: black;
 }
 
+a:hover {
+    color: #224488;
+}
+
+a:active {
+    color: #4477AA;
+}
+
 hr {
     border: 0;
     border-bottom: 1px solid #999999;
@@ -72,6 +80,15 @@ code, pre {
     border: 1px black solid;
     border-radius: 0;
     padding: .75rem 1.2rem;
+    background-color: #EEEEEE;
+}
+
+.button:hover {
+    background-color: #DDDDDD;
+}
+
+.button:active {
+    background-color: #BBBBBB;
 }
 
 .radiobtn {
