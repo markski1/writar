@@ -19,43 +19,23 @@ function get_documents($database, $user_id): string
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
     foreach ($posts as $post) {
-        $docs .= <<<EOD
+        $docs .= /* @lang HTML */
+            <<<EOD
                 
-                <div class="listed_post">
-                    <h3>{$post['title']}</h3>
-                    <p><sitelink to="doc/{$post['id']}">view</sitelink> - <sitelink to="delete/{$post['id']}">delete</sitelink><br>    
-                    <span class="light_text">{$post['visits']} visits.</span></p>
-                </div>
+            <div class="listed_post">
+                <h3>{$post['title']}</h3>
+                <p><sitelink to="doc/{$post['id']}">view</sitelink> - <sitelink to="edit/{$post['id']}">edit</sitelink> - <sitelink to="delete/{$post['id']}">delete</sitelink><br>    
+                <span class="light_text">{$post['visits']} visits.</span></p>
+            </div>
 
-                EOD;
+            EOD;
     }
 
     return $docs;
 }
 
-function create_document($database, $title, $content, $password, $user_id, $privacy): string
+function create_document($database, $id, $title, $content, $password, $user_id, $privacy): string
 {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-    while (true) {
-        $id = '';
-
-        for ($i = 0; $i < 10; $i++) {
-            $index = rand(0, strlen($characters) - 1);
-            $id .= $characters[$index];
-        }
-
-        $query = $database->prepare("SELECT id FROM documents WHERE id = ?");
-        $query->bind_param("s", $id);
-        $query->execute();
-
-        $result = $query->get_result();
-
-        if ($result->num_rows < 1) {
-            break;
-        }
-    }
-
     if (strlen($title) == 0) {
         return "<p>please enter a title.</p>";
     }
@@ -82,15 +62,64 @@ function create_document($database, $title, $content, $password, $user_id, $priv
         $hashed_pword = '';
     }
 
-    $query = $database->prepare("INSERT INTO documents (title, content, user_id, id, password, privacy) VALUES(?, ?, ?, ?, ?, ?)");
-    $query->bind_param("ssissi", $title, $content, $user_id, $id, $hashed_pword, $privacy);
-    $success = $query->execute();
+    // if $id is null, we're creating a document, otherwise we're updating.
+    if ($id == null) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-    if (!$success) {
-        return "<p>sorry, could not create document.</p>";
+        while (true) {
+            $id = '';
+
+            for ($i = 0; $i < 10; $i++) {
+                $index = rand(0, strlen($characters) - 1);
+                $id .= $characters[$index];
+            }
+
+            $query = $database->prepare("SELECT id FROM documents WHERE id = ?");
+            $query->bind_param("s", $id);
+            $query->execute();
+
+            $result = $query->get_result();
+
+            if ($result->num_rows < 1) {
+                break;
+            }
+        }
+
+        $query = $database->prepare("INSERT INTO documents (title, content, user_id, id, password, privacy) VALUES(?, ?, ?, ?, ?, ?)");
+        $query->bind_param("ssissi", $title, $content, $user_id, $id, $hashed_pword, $privacy);
+        $success = $query->execute();
+
+        if (!$success) {
+            return "<p>sorry, could not create document.</p>";
+        }
+        return "<p>document created. <a href='../doc/{$id}' hx-post='../doc/{$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
     }
+    else {
+        $query = $database->prepare("SELECT user_id FROM documents WHERE id = ?");
+        $query->bind_param("i", $id);
+        $query->execute();
 
-    return "<p>document created. <a href='../doc/{$id}' hx-post='../doc/{$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
+        $result = $query->get_result();
+
+        if ($result->num_rows < 1) {
+            return "<p>error updating, please try again in a few seconds.</p>";
+        }
+
+        $result = $result->fetch_array();
+
+        if ($result['user_id'] != $user_id) {
+            return "<p>it doesn't seem you own this document.</p>";
+        }
+
+        $query = $database->prepare("UPDATE documents SET title = ?, content = ?, password = ?, privacy = ? WHERE id = ?");
+        $query->bind_param("sssis", $title, $content, $hashed_pword, $privacy, $id);
+        $success = $query->execute();
+
+        if ($success) {
+            return "<p>document edited. <a href='../doc/{$id}' hx-post='../doc/{$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
+        }
+        return "<p>document editing failed, please try again in a few seconds.</p>";
+    }
 }
 
 function get_document($database, $session, $document_id): document | bool
@@ -123,7 +152,7 @@ class document
     public string $id;
     public string $author;
     public string $title;
-    private string $content;
+    public string $content;
     private string $created_at;
     private string $password;
 
@@ -131,16 +160,12 @@ class document
     {
         $this->session = $session;
         $this->database = $database;
-        $Parsedown = new Parsedown();
-        $Parsedown->setSafeMode(true);
 
         $this->title = htmlspecialchars($document_data['title']);
         $this->content = $document_data['content'];
 
         if (strlen($this->title) == 0) $this->title = "untitled";
         if (strlen($this->content) == 0) $this->content = "document is empty.";
-
-        $this->content = $Parsedown->text($this->content);
 
         $this->password = $document_data['password'];
         $this->author = $document_data['username'];
@@ -179,7 +204,7 @@ class document
             $query->bind_param("s", $this->id);
             $query->execute();
             if ($this->session->get_username() == $this->author) {
-                $render .= "<p><small>written by <b>you</b> <span class='light_text'>at {$this->created_at}</span> | <sitelink to=\"delete/{$this->id}\">delete</sitelink></small></p>";
+                $render .= "<p><small>written by <b>you</b> <span class='light_text'>at {$this->created_at}</span> | <sitelink to=\"edit/{$this->id}\">edit</sitelink> - <sitelink to=\"delete/{$this->id}\">delete</sitelink></small></p>";
                 $owner = true;
             }
         }
@@ -188,7 +213,9 @@ class document
             $render .= "<p><small>written by <b>{$this->author}</b> <span class='light_text'>at {$this->created_at}</span></small></p>";
         }
 
-        $render .= "<hr><div class='document_content'>{$this->content}</div>";
+        $Parsedown = new Parsedown();
+        $Parsedown->setSafeMode(true);
+        $render .= "<hr><div class='document_content'>{$Parsedown->text($this->content)}</div>";
 
         return $render;
     }

@@ -3,6 +3,7 @@
 class session {
     private mysqli $mysqli;
     private string $username;
+    private string $last_op;
     private int $id;
     private bool $isLoggedIn = false;
 
@@ -18,7 +19,7 @@ class session {
         // both these cookies indicate a session is locally set.
         if (isset($_COOKIE['user_id']) && isset($_COOKIE['session_token'])) {
             // if they exist, every user will have a session key in the database.
-            $query = $this->mysqli->prepare("SELECT * FROM users WHERE session_token=? AND id=?");
+            $query = $this->mysqli->prepare("SELECT id, username, last_op FROM users WHERE session_token=? AND id=?");
             $query->bind_param("ss", $_COOKIE['session_token'], $_COOKIE['user_id']);
             $query->execute();
 
@@ -30,6 +31,7 @@ class session {
                 // within this session object, cache username, id and session status.
                 $this->username = $result['username'];
                 $this->id = $result['id'];
+                $this->last_op = $result['last_op'];
                 $this->isLoggedIn = true;
             }
         }
@@ -89,6 +91,23 @@ class session {
 
     function register($username, $password): string
     {
+        $ip_addr = $_SERVER["HTTP_CF_CONNECTING_IP"] ?? $_SERVER['REMOTE_ADDR'];
+        $date = new DateTime();
+        $check_datetime = $date->format('Y-m-d H:i:s');
+        $date->add(new DateInterval('PT120S'));
+        $reg_datetime = $date->format('Y-m-d H:i:s');
+
+
+        $query = $this->mysqli->prepare("SELECT * FROM ip_log WHERE ip_addr = ? AND created_at > ?");
+        $query->bind_param("ss", $ip_addr, $check_datetime);
+        $query->execute();
+
+        $result = $query->get_result();
+
+        if ($result->num_rows > 0) {
+            return "please try in a few seconds.";
+        }
+
         if (!ctype_alnum($username)) {
             return "username may only contain alphanumerics.";
         }
@@ -121,6 +140,10 @@ class session {
         if (!$success) {
             return "sorry, could not create account.";
         }
+
+        $query = $this->mysqli->prepare("INSERT INTO ip_log (ip_addr, created_at) VALUES(?, ?)");
+        $query->bind_param("ss", $ip_addr, $reg_datetime);
+        $query->execute();
 
         return 'account registered. you may now click "login".';
     }
@@ -209,5 +232,21 @@ class session {
         }
         return -1;
     }
+
+    function can_do_operation(int $seconds): bool
+    {
+        $time = time() - strtotime($this->last_op);
+
+        return $time > $seconds;
+    }
+
+    function update_last_operation(): void
+    {
+        $date = new DateTime();
+        $result = $date->format('Y-m-d H:i:s');
+
+        $query = $this->mysqli->prepare("UPDATE users SET last_op = ? WHERE id = ?");
+        $query->bind_param("si", $result, $this->id);
+        $query->execute();
+    }
 }
-?>

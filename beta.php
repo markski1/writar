@@ -9,7 +9,6 @@ $content = <<<EOD
     <p>writar is work in progress.</p>
     <p>roadmap:</p>
     <ul>
-        <li>document editing</li>
         <li>standalone domain</li>
         <li>ux improvements</li>
         <li>user profiles (disabled by default - if enabled, will list your public documents)</li>

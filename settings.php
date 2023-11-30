@@ -19,7 +19,7 @@ $content = <<<EOD
         <p>choose an option.</p>
     </div>
     
-    <sitelink to="panel.php">return</sitelink>
+    <sitelink to="panel">return</sitelink>
 
 
 EOD;
