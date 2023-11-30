@@ -5,10 +5,11 @@ class session {
     private string $username;
     private string $last_op;
     private string $email;
+    private string $api_key;
     private int $id;
     private bool $isLoggedIn = false;
 
-    function __construct($mysqli = null) {
+    function __construct($mysqli = null, $api_key = null) {
         if ($mysqli == null) {
             include_once "db.php";
             $this->mysqli = db_connect();
@@ -17,13 +18,18 @@ class session {
             $this->mysqli = $mysqli;
         }
 
-        // both these cookies indicate a session is locally set.
-        if (isset($_COOKIE['user_id']) && isset($_COOKIE['session_token'])) {
-            // if they exist, every user will have a session key in the database.
-            $query = $this->mysqli->prepare("SELECT id, username, email, last_op FROM users WHERE session_token=? AND id=?");
-            $query->bind_param("ss", $_COOKIE['session_token'], $_COOKIE['user_id']);
-            $query->execute();
+        // an API key or both these cookies indicate a session is set.
+        if ($api_key != null || (isset($_COOKIE['user_id']) && isset($_COOKIE['session_token']))) {
+            if ($api_key == null) {
+                $query = $this->mysqli->prepare("SELECT id, username, email, last_op, api_key FROM users WHERE session_token=? AND id=?");
+                $query->bind_param("ss", $_COOKIE['session_token'], $_COOKIE['user_id']);
+            }
+            else {
+                $query = $this->mysqli->prepare("SELECT id, username, email, last_op FROM users WHERE api_key=?");
+                $query->bind_param("s", $api_key);
+            }
 
+            $query->execute();
             $result = $query->get_result();
 
             // if there's a result, the user has a legitimate session.
@@ -33,6 +39,7 @@ class session {
                 $this->username = $result['username'];
                 $this->email = $result['email'] ?? 'not set';
                 $this->id = $result['id'];
+                $this->api_key = $result['api_key'] ?? 'not set';
                 $this->last_op = $result['last_op'];
                 $this->isLoggedIn = true;
             }
@@ -199,6 +206,19 @@ class session {
         }
     }
 
+    function change_api_key($newkey): bool
+    {
+        $query = $this->mysqli->prepare("UPDATE users SET api_key = ? WHERE id = ?");
+        $query->bind_param("si", $newkey, $this->id);
+        $success = $query->execute();
+
+        if (!$success) {
+            return false;
+        }
+
+        return true;
+    }
+
     function delete_account(): bool
     {
         $query = $this->mysqli->prepare("DELETE FROM users WHERE id = ?");
@@ -257,6 +277,15 @@ class session {
         // set in the constructor.
         if (isset($this->email)) {
             return $this->email;
+        }
+        return "[invalid]";
+    }
+
+    function get_api_key(): string
+    {
+        // set in the constructor.
+        if (isset($this->api_key)) {
+            return $this->api_key;
         }
         return "[invalid]";
     }

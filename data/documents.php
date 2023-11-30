@@ -34,33 +34,50 @@ function get_documents($database, $user_id): string
     return $docs;
 }
 
-function create_document($database, $id, $title, $content, $password, $user_id, $privacy): string
+function create_document($database, $id, $title, $content, $password, $user_id, $privacy): array
 {
     if (strlen($title) == 0) {
-        return "<p>please enter a title.</p>";
+        return array(
+            'success' => false,
+            'message' => 'please enter a title.'
+        );
     }
 
     $content_length = strlen($content);
 
     if ($content_length < 10) {
-        return "<p>a document should be at least 10 characters long.</p>";
+        return array(
+            'success' => false,
+            'message' => 'a document should be at least 10 characters long.'
+        );
     }
 
     if ($content_length > 50000) {
         $formatted_content_length = number_format($content_length);
-        return "<p>a document may not be longer than 50,000 characters. currently is {$formatted_content_length}.</p>";
+        return array(
+            'success' => false,
+            'message' => "a document may not be longer than 50,000 characters. currently is {$formatted_content_length}."
+        );
     }
 
     if ($privacy == 2) {
         if (strlen($password) > 0) {
             if (strlen($password) > 72) {
-                return "password can't be longer than 72 characters. no, this doesn't mean it's being stored in plaintext.";
+                return array(
+                    'success' => false,
+                    'message' => "password can't be longer than 72 characters."
+                );
             }
             // hash the plaintext password to bcrypt
             $hashed_pword = password_hash($password, PASSWORD_BCRYPT);
         } else {
-            return "<p>enter a password, or change privacy level.</p>";
+            return array(
+                'success' => false,
+                'message' => "enter a password, or change privacy level."
+            );
         }
+    } else {
+        $hashed_pword = '';
     }
 
     // if $id is null, we're creating a document, otherwise we're updating.
@@ -91,9 +108,16 @@ function create_document($database, $id, $title, $content, $password, $user_id, 
         $success = $query->execute();
 
         if (!$success) {
-            return "<p>sorry, could not create document.</p>";
+            return array(
+                'success' => false,
+                'message' => "document could not be created."
+            );
         }
-        return "<p>document created. <a href='../doc/{$id}' hx-post='../doc/{$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
+        return array(
+            'success' => true,
+            'message' => "document created.",
+            'id' => $id
+        );
     }
     else {
         $query = $database->prepare("SELECT user_id FROM documents WHERE id = ?");
@@ -103,13 +127,19 @@ function create_document($database, $id, $title, $content, $password, $user_id, 
         $result = $query->get_result();
 
         if ($result->num_rows < 1) {
-            return "<p>error updating, please try again in a few seconds.</p>";
+            return array(
+                'success' => false,
+                'message' => "document could not be edited. please try again in a few seconds."
+            );
         }
 
         $result = $result->fetch_array();
 
         if ($result['user_id'] != $user_id) {
-            return "<p>it doesn't seem you own this document.</p>";
+            return array(
+                'success' => false,
+                'message' => "you don't own the document"
+            );
         }
 
         $query = $database->prepare("UPDATE documents SET title = ?, content = ?, password = ?, privacy = ? WHERE id = ?");
@@ -117,9 +147,16 @@ function create_document($database, $id, $title, $content, $password, $user_id, 
         $success = $query->execute();
 
         if ($success) {
-            return "<p>document edited. <a href='../doc/{$id}' hx-post='../doc/{$id}' hx-push-url='true' hx-target='main'>go to document</a></p>";
+            return array(
+                'success' => true,
+                'message' => "document edited.",
+                'id' => $id
+            );
         }
-        return "<p>document editing failed, please try again in a few seconds.</p>";
+        return array(
+            'success' => false,
+            'message' => "document could not be edited. please try again in a few seconds."
+        );
     }
 }
 
@@ -154,7 +191,7 @@ class document
     public string $author;
     public string $title;
     public string $content;
-    private string $created_at;
+    public string $created_at;
     private string $password;
 
     function __construct($database, $session, $document_data)

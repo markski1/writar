@@ -41,15 +41,27 @@ if (!$session->can_do_operation(30)) {
 }
 
 if (isset($_POST['create'])) {
-    echo create_document($database, null, $title, $content, $password, $session->get_id(), $privacy);
-    $session->update_last_operation();
+    $result = create_document($database, null, $title, $content, $password, $session->get_id(), $privacy);
+    if ($result['success']) {
+        $session->update_last_operation();
+        echo "<p>document created. <a href='../doc/{$result['id']}' hx-post='../doc/{$result['id']}' hx-push-url='true' hx-target='main'>go to document</a>";
+    }
+    else {
+        echo "<p>{$result['message']}</p>";
+    }
     exit;
 }
 
 if (isset($_POST['update']) && isset($_POST['id'])) {
     $id = $_POST['id'];
-    echo create_document($database, $id, $title, $content, $password, $session->get_id(), $privacy);
-    $session->update_last_operation();
+    $result = create_document($database, $id, $title, $content, $password, $session->get_id(), $privacy);
+    if ($result['success']) {
+        $session->update_last_operation();
+        echo "<p>document updated. <a href='../doc/{$result['id']}' hx-post='../doc/{$result['id']}' hx-push-url='true' hx-target='main'>go to document</a>";
+    }
+    else {
+        echo "<p>{$result['message']}</p>";
+    }
     exit;
 }
 
