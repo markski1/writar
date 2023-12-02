@@ -8,12 +8,18 @@ $username = $_POST['writar_username'] ?? '??INVALID??';
 $password = $_POST['writar_password'] ?? '??INVALID??';
 
 if (isset($_POST['login'])) {
-    echo $session->identify($username, $password);
+    $result = $session->identify($username, $password);
+    if ($result['success']) {
+        Header('HX-Location: {"path":"/panel", "target":"main"}');
+    }
+    else {
+        echo $result['message'];
+    }
     exit;
 }
 
 if (isset($_POST['register'])) {
-    echo $session->register($username, $password);
+    $result = $session->register($username, $password);
     exit;
 }
 

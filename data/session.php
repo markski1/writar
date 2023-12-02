@@ -46,14 +46,20 @@ class session {
         }
     }
 
-    function identify($username, $password): string
+    function identify($username, $password): array
     {
         if (!ctype_alnum($username)) {
-            return "username may only contain alphanumerics.";
+            return array(
+                'success' => false,
+                'message' => 'username may only contain alphanumerics.'
+            );
         }
 
         if (strlen($password) > 72) {
-            return "invalid password";
+            return array(
+                'success' => false,
+                'message' => 'invalid password'
+            );
         }
 
         // check the key exists in the database.
@@ -64,13 +70,19 @@ class session {
         $result = $query->get_result();
 
         if ($result->num_rows < 1) {
-            return "username or password is incorrect.";
+            return array(
+                'success' => false,
+                'message' => 'username or password is incorrect.'
+            );
         }
 
         $result = $result->fetch_array();
 
         if (!password_verify($password, $result['password'])) {
-            return "username or password is incorrect.";
+            return array(
+                'success' => false,
+                'message' => 'username or password is incorrect.'
+            );
         }
 
         $user_id = $result['id'];
@@ -95,7 +107,10 @@ class session {
         $this->id = $user_id;
         $this->isLoggedIn = true;
 
-        return "<script>window.location.replace('/panel');</script>";
+        return array(
+            'success' => true,
+            'message' => 'login successful.'
+        );
     }
 
     function register($username, $password): string
