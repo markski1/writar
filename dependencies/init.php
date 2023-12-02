@@ -1,5 +1,5 @@
 <?php
-Header('Cache-Control: private, max-age=300');
+Header('Cache-Control: private, max-age=3');
 include 'data/db.php';
 include 'data/session.php';
 include 'data/documents.php';

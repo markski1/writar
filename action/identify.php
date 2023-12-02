@@ -19,7 +19,7 @@ if (isset($_POST['login'])) {
 }
 
 if (isset($_POST['register'])) {
-    $result = $session->register($username, $password);
+    echo $session->register($username, $password);
     exit;
 }
 

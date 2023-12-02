@@ -234,8 +234,24 @@ class session {
         return true;
     }
 
-    function delete_account(): bool
+    function delete_account($password): bool
     {
+        $query = $this->mysqli->prepare("SELECT password FROM users WHERE id = ?");
+        $query->bind_param("s", $this->id);
+        $query->execute();
+
+        $result = $query->get_result();
+
+        if ($result->num_rows < 1) {
+            return false;
+        }
+
+        $result = $result->fetch_array();
+
+        if (!password_verify($password, $result['password'])) {
+            return false;
+        }
+
         $query = $this->mysqli->prepare("DELETE FROM users WHERE id = ?");
         $query->bind_param("i", $this->id);
         $success = $query->execute();

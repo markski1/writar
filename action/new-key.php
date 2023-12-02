@@ -20,7 +20,7 @@ for ($i = 0; $i < 32; $i++) {
 }
 
 if ($session->change_api_key($random_string)) {
-    echo "<p>your new api key: {$random_string}.</p>";
+    echo "<p>your new api key:</p><pre>{$random_string}</pre>";
 }
 else {
     echo "<p>could not set a new api key.</p>";

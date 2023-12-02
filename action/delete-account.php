@@ -11,8 +11,13 @@ if (!$session->is_logged_in()) {
     return "auth error.";
 }
 
-$session->delete_account();
+if ($session->delete_account($_POST['writar_password'])) {
+    echo '<p>account deleted. all posts deleted. you have been logged out.</p>';
+}
+else {
+    echo '<p>account was not deleted, there was an error. is the password correct?</p>';
+}
 
 ?>
 
-<p>account deleted. all posts deleted. you have been logged out.</p>
+
