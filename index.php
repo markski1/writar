@@ -10,7 +10,7 @@ if ($session->is_logged_in()) {
 $content = <<<EOD
 
 
-    <p>writar is a free text hosting and sharing service, currently in <sitelink to="beta">beta</sitelink>.</p>
+    <p>writar is a free text hosting and sharing service, currently in <sitelink to="doc/ioLN8">beta</sitelink>.</p>
     
     <p>features:</p>
     
@@ -23,7 +23,7 @@ $content = <<<EOD
        <li>no adverts, ever</li>
     </ul>
     
-    <p>preview an <sitelink to="doc/tHKOkN0mUN">example document</sitelink>.</p>
+    <p>preview an <sitelink to="doc/tHKOk">example document</sitelink>.</p>
     
     <p>to publish and manage your documents, please identify.</p>
     

@@ -25,7 +25,7 @@ $content = <<<EOD
             <small class="light_text" style="margin-left: 1.8rem">will only be seen by people who you send the link to (unless you post the link somewhere public).</small><br>
             <label><input class="radiobtn" type="radio" name="privacy" onclick="showPassword(true)" value="password">passworded document</label><br>
             <small class="light_text" style="margin-left: 1.8rem">private, and will need a password to be viewed.</small><br>
-            <input style="display: none; margin-top: 1rem; margin-left: 1.8rem" id="document_password" class="field_input" autocomplete="new-password" placeholder="password" name="writar_password" type="password" style="width: 20rem">
+            <input style="display: none; margin-top: 1rem; margin-left: 1.8rem; width: 20rem" id="document_password" class="field_input" autocomplete="new-password" placeholder="password" name="writar_password" type="password">
         </div>
         <input class="button" name="create" type="submit" value="create document"> <input class="button" name="preview" type="submit" value="preview formatted document">
     </form>

@@ -87,7 +87,7 @@ function create_document($database, $id, $title, $content, $password, $user_id, 
         while (true) {
             $id = '';
 
-            for ($i = 0; $i < 10; $i++) {
+            for ($i = 0; $i < 5; $i++) {
                 $index = rand(0, strlen($characters) - 1);
                 $id .= $characters[$index];
             }

@@ -12,7 +12,6 @@ $content = <<<EOD
     <ul>
        <li><sitelink to="new">new document</sitelink></li>
        <li><sitelink to="settings">settings</sitelink></li>
-       <li><sitelink to="beta">about the beta</sitelink></li>
        <li><sitelink to="logout">logout</sitelink></li>
     </ul>
     
