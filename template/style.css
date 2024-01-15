@@ -109,3 +109,16 @@ code, pre {
 .light_text {
     color: #444444;
 }
+
+/* Animate */
+
+.opacity-trans{
+    opacity:1;
+    transition: opacity 175ms ease-in;
+}
+.htmx-request .opacity-trans{
+    opacity:0.1
+}
+.htmx-request.opacity-trans{
+    opacity:0.1
+}
