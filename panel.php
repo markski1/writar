@@ -4,7 +4,7 @@ init($database, $session, "login_required");
 
 $document_list = get_documents($database, $session->get_id());
 
-$content = <<<EOD
+$content = <<<HTML
 
 
     <h3>identified as {$session->get_username()}</h3>
@@ -20,9 +20,9 @@ $content = <<<EOD
     <div>
         {$document_list}
     </div>
+    
 
-
-EOD;
+HTML;
 
 $site = new Template("panel");
 $site->render($content);

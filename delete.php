@@ -22,7 +22,7 @@ if (isset($_POST['confirm'])) {
     $site->render("<h3>document deleted.</h3><p><sitelink to=\"panel\">return to panel</sitelink></p>");
 }
 else {
-    $password_required_form = <<<EOD
+    $password_required_form = <<<HTML
 
         <h3>deleting document: {$document->title}</h3>
         
@@ -31,7 +31,7 @@ else {
             <input class="button" type="submit" value="delete this document" name="confirm">
         </form>
 
-    EOD;
+    HTML;
 
     $site->render($password_required_form);
 }

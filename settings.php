@@ -4,7 +4,7 @@ init($database, $session, "login_required");
 
 $site = new Template("settings");
 
-$content = <<<EOD
+$content = <<<HTML
 
   
     <h3>settings</h3>
@@ -23,6 +23,6 @@ $content = <<<EOD
     <sitelink to="panel">return</sitelink>
 
 
-EOD;
+HTML;
 
 $site->render($content);

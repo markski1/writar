@@ -16,7 +16,7 @@ if (!$document->is_owner($session)) {
     exit;
 }
 
-$content = <<<EOD
+$content = <<<HTML
 
 
     <h3>editing document</h3>
@@ -60,7 +60,7 @@ $content = <<<EOD
     </script>
 
 
-EOD;
+HTML;
 
 $site = new Template("writing document");
 $site->render($content);

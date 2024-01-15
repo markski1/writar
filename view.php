@@ -20,7 +20,7 @@ if ($document->needs_password()) {
         }
     }
     else {
-        $password_required_form = <<<EOD
+        $password_required_form = <<<HTML
 
             <h3>a password is required to view this document</h3>
             
@@ -29,7 +29,7 @@ if ($document->needs_password()) {
                 <input class="button" type="submit" value="view document">
             </form>
 
-        EOD;
+        HTML;
 
         $site = new Template("passworded document");
         $site->set_description("this document requires a password");

@@ -2,7 +2,7 @@
 include 'dependencies/init.php';
 init($database, $session, "login_required");
 
-$content = <<<EOD
+$content = <<<HTML
 
 
     <h3>making new document</h3>
@@ -46,7 +46,7 @@ $content = <<<EOD
     </script>
 
 
-EOD;
+HTML;
 
 $site = new Template("writing document");
 $site->render($content);

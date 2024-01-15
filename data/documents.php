@@ -20,7 +20,7 @@ function get_documents($database, $user_id): string
     $docs = "";
     foreach ($posts as $post) {
         $docs .= /* @lang HTML */
-            <<<EOD
+            <<<HTML
                 
             <div class="listed_post">
                 <h3>{$post['title']}</h3>
@@ -28,7 +28,7 @@ function get_documents($database, $user_id): string
                 <span class="light_text">{$post['visits']} visits.</span></p>
             </div>
 
-            EOD;
+            HTML;
     }
 
     return $docs;

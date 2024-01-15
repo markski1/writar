@@ -7,7 +7,7 @@ if ($session->is_logged_in()) {
     exit;
 }
 
-$content = <<<EOD
+$content = <<<HTML
 
 
     <p>writar is a free text hosting and sharing service, currently in <sitelink to="doc/ioLN8">beta</sitelink>.</p>
@@ -35,7 +35,7 @@ $content = <<<EOD
     <p><small id="login_result"></small></p>
 
 
-EOD;
+HTML;
 
 $site = new Template("home");
 $site->set_description("writar is a free, open source document sharing platform.");
