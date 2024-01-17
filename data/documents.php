@@ -19,11 +19,12 @@ function get_documents($database, $user_id): string
     $posts = $result->fetch_all(MYSQLI_ASSOC);
     $docs = "";
     foreach ($posts as $post) {
+        $clean_title = htmlspecialchars($post['title']);
         $docs .= /* @lang HTML */
             <<<HTML
                 
             <div class="listed_post">
-                <h3>{$post['title']}</h3>
+                <h3>{$clean_title}</h3>
                 <p><sitelink to="doc/{$post['id']}">view</sitelink> - <sitelink to="edit/{$post['id']}">edit</sitelink> - <sitelink to="delete/{$post['id']}">delete</sitelink><br>    
                 <span class="light_text">{$post['visits']} visits.</span></p>
             </div>
@@ -162,7 +163,7 @@ function create_document($database, $id, $title, $content, $password, $user_id, 
 
 function get_document($database, $session, $document_id): document | bool
 {
-    $query = $database->prepare("SELECT t.*, u.username FROM documents as t INNER JOIN users as u ON t.user_id = u.id WHERE t.id = ?");
+    $query = $database->prepare("SELECT t.*, u.username, u.id AS author_id FROM documents as t INNER JOIN users as u ON t.user_id = u.id WHERE t.id = ?");
     $query->bind_param("s", $document_id);
     $query->execute();
 
@@ -188,9 +189,10 @@ class document
     private session $session;
     private mysqli $database;
     public string $id;
-    public string $author;
-    public string $title;
-    public string $content;
+    private int $author_id;
+    private string $author;
+    private string $title;
+    private string $content;
     public string $created_at;
     private string $password;
 
@@ -199,7 +201,7 @@ class document
         $this->session = $session;
         $this->database = $database;
 
-        $this->title = htmlspecialchars($document_data['title']);
+        $this->title = $document_data['title'];
         $this->content = $document_data['content'];
 
         if (strlen($this->title) == 0) $this->title = "untitled";
@@ -207,6 +209,7 @@ class document
 
         $this->password = $document_data['password'] ?? '';
         $this->author = $document_data['username'] ?? 'unknown';
+        $this->author_id = $document_data['author_id'] ?? -1;
         $this->created_at = $document_data['created_at'] ?? 'unknown';
         $this->id = $document_data['id'];
     }
@@ -225,9 +228,24 @@ class document
         return false;
     }
 
+    function get_title(): string
+    {
+        return htmlspecialchars($this->title);
+    }
+
+    function get_content(): string
+    {
+        return htmlspecialchars($this->content);
+    }
+
+    function get_author(): string
+    {
+        return htmlspecialchars($this->title);
+    }
+
     function is_owner($session): bool
     {
-        return $session->get_username() == $this->author;
+        return $session->get_id() == $this->author_id;
     }
 
     function render(): string
@@ -241,7 +259,7 @@ class document
             $query = $this->database->prepare("UPDATE documents SET visits = visits + 1 WHERE id = ?");
             $query->bind_param("s", $this->id);
             $query->execute();
-            if ($this->session->get_username() == $this->author) {
+            if ($this->session->get_id() == $this->author_id) {
                 $render .= "<p><small>written by <b>you</b> <span class='light_text'>at {$this->created_at}</span> | <sitelink to=\"edit/{$this->id}\">edit</sitelink> - <sitelink to=\"delete/{$this->id}\">delete</sitelink></small></p>";
                 $owner = true;
             }
