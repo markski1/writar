@@ -38,6 +38,6 @@ if ($document->needs_password()) {
     }
 }
 
-$site = new Template($document->title);
-$site->set_description("a document by {$document->author}");
+$site = new Template($document->get_title());
+$site->set_description("a document by {$document->get_author()}");
 $site->render($document->render());

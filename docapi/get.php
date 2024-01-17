@@ -40,9 +40,9 @@ if ($document->needs_password()) {
 
 $result = array(
     'success' => true,
-    'title' => $document->title,
-    'content' => $document->content,
-    'author' => $document->author,
+    'title' => $document->get_title(),
+    'content' => $document->get_content(),
+    'author' => $document->get_author(),
     'created_at' => $document->created_at
 );
 

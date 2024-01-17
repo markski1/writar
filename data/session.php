@@ -289,7 +289,7 @@ class session {
     {
         // set in the constructor.
         if (isset($this->username)) {
-            return $this->username;
+            return htmlspecialchars($this->username);
         }
         return "[invalid]";
     }
@@ -307,7 +307,7 @@ class session {
     {
         // set in the constructor.
         if (isset($this->email)) {
-            return $this->email;
+            return htmlspecialchars($this->email);
         }
         return "[invalid]";
     }

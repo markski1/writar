@@ -24,7 +24,7 @@ if (isset($_POST['confirm'])) {
 else {
     $password_required_form = <<<HTML
 
-        <h3>deleting document: {$document->title}</h3>
+        <h3>deleting document: {$document->get_title()}</h3>
         
         <form hx-post hx-target="main">
             <p>please confirm this action</p>
