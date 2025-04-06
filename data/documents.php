@@ -240,7 +240,7 @@ class document
 
     function get_author(): string
     {
-        return htmlspecialchars($this->title);
+        return htmlspecialchars($this->author);
     }
 
     function is_owner($session): bool
@@ -250,7 +250,7 @@ class document
 
     function render(): string
     {
-        $render = "<h2>{$this->title}</h2>";
+        $render = "<h2>{$this->get_title()}</h2>";
 
         $owner = false;
 
@@ -266,7 +266,7 @@ class document
         }
 
         if (!$owner) {
-            $render .= "<p><small>written by <b>{$this->author}</b> <span class='light_text'>at {$this->created_at}</span></small></p>";
+            $render .= "<p><small>written by <b>{$this->get_author()}</b> <span class='light_text'>at {$this->created_at}</span></small></p>";
         }
 
         $Parsedown = new Parsedown();
